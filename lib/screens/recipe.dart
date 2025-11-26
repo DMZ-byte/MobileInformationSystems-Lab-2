@@ -1,25 +1,91 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-class RecipePage extends StatefulWidget {
-  const RecipePage({super.key});
+import '../models/recipe.dart';
+import '../services/api_service.dart';
+import '../widgets/DetailImage.dart';
+import '../widgets/detaildata.dart';
+
+class RecipeDetailScreen extends StatefulWidget {
+  final int recipeId;
+
+  const RecipeDetailScreen({super.key, required this.recipeId});
 
   @override
-  State<RecipePage> createState() => _RecipePageState();
+  State<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
 }
-class _RecipePageState extends State<RecipePage> {
-  int? id;
-  File? pickedImage;
-  String? name;
-  String? instructions;
-  String? ytlink;
-  List<String>? ingredients;
+
+class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
+  late Future<Recipe?> _recipeFuture;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    _recipeFuture = ApiService().recipeDetailLookup(widget.recipeId);
   }
-  Future<void> pickImage() async {
-    final picker = ImagePicker();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Recipe Details"),
+      ),
+      body: FutureBuilder<Recipe?>(
+        future: _recipeFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text("Recipe not found."));
+          }
+
+          final recipe = snapshot.data!;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DetailImage(image: recipe.img ?? 'https://via.placeholder.com/300x200?text=No+Image'),
+
+                const SizedBox(height: 20),
+
+                RecipeInfo(
+                  name: recipe.name,
+                  category: recipe.category ?? "unavailable",
+                  youtubeLink: recipe.ytlink ?? "unavailable",
+                ),
+
+                const SizedBox(height: 20),
+
+                _buildSectionTitle("Ingredients"),
+                ...(recipe.ingredients ?? []).map((i) => Text("• $i")) ,
+
+                const SizedBox(height: 20),
+
+                _buildSectionTitle("Instructions"),
+                Text(
+                  recipe.instructions ?? "unavailable",
+                  textAlign: TextAlign.justify,
+                  style: const TextStyle(fontSize: 16),
+                ),
+
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+      ),
+    );
   }
 }

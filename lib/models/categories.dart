@@ -14,7 +14,7 @@ class Category{
 
   };
   Category.fromJson(Map<String, dynamic> data):
-    id = data['idCategory'],
+    id = int.parse(data['idCategory']),
     name = data['strCategory'],
     img = data['strCategoryThumb'],
     descr = data['strCategoryDescription'];
