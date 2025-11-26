@@ -17,7 +17,6 @@ class CategoryCard extends StatelessWidget{
           side: BorderSide(color: Colors.green, width: 3),
           borderRadius: BorderRadius.circular(10),
         ),
-        // OPTION 1: Set a fixed height for the entire Card for consistent list items
         child: SizedBox(
           height: 280,
           child: Padding(
@@ -33,7 +32,6 @@ class CategoryCard extends StatelessWidget{
                 ),
                 Divider(),
                 Text(category.name, style: TextStyle(fontSize: 20)),
-                // Add the short description here if available
                 Text(category.descr, maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),

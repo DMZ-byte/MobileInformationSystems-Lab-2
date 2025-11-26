@@ -79,7 +79,6 @@ class ApiService {
     };
 
   }
-  //need to add category search filter
 
 
 

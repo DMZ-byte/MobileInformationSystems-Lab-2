@@ -79,15 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void _filterCategories() {
     final query = _searchController.text.toLowerCase();
 
-    // Only rebuild the UI if this is mounted
     if (!mounted) return;
 
     setState(() {
       if (query.isEmpty) {
-        // If the query is empty, show all categories
         _filteredCategories = _allCategories;
       } else {
-        // Filter the list where the category name contains the query
         _filteredCategories = _allCategories.where((category) {
           return category.name.toLowerCase().contains(query);
         }).toList();
